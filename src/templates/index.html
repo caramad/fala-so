@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+	<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+		<title>XYZ Tech AI Assistant</title>	
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+	</head>
+	<body>
+
+	<div class="infobot-container">
+		<!-- SIDEBAR -->
+		<aside class="sidebar">
+		<h2 class="sidebar-title">Quick Access</h2>
+		<nav class="sidebar-nav">
+			<button>Company Overview</button>
+			<button>Support</button>
+			<button>Contact Us</button>
+		</nav>
+		<div class="faqs">
+			<h3>FAQs</h3>
+			<ul>
+			<li>How to access company data?</li>
+			<li>What services do you offer?</li>
+			<li>How to contact support?</li>
+			</ul>
+		</div>
+		</aside>
+
+		<!-- MAIN CHAT AREA -->
+		<main class="chat-area">
+		<div id="chatContent" class="chat-content">
+			<!-- Example initial messages (optional) -->
+			<div class="chat-message bot-message">
+			<strong>InfoBot:</strong> Como posso ajudar você hoje?
+			</div>
+		</div>
+
+		<div class="chat-input">
+			<input
+			type="text"
+			id="messageInput"
+			placeholder="Type your message here..."
+			/>
+			<button id="sendBtn">Send</button>
+		</div>
+		</main>
+	</div>
+
+	<footer class="footer">
+		<span>© 2023 InfoBot. All rights reserved.</span>
+		<span class="footer-links">
+		<a href="#">Privacy Policy</a>
+		<a href="#">Contact</a>
+		</span>
+	</footer>
+
+	<script>
+		const sendBtn = document.getElementById('sendBtn');
+		const messageInput = document.getElementById('messageInput');
+		const chatContent = document.getElementById('chatContent');
+
+		sendBtn.addEventListener('click', sendMessage);
+		messageInput.addEventListener('keyup', (event) => {
+		if (event.key === 'Enter') {
+			sendMessage();
+		}
+		});
+
+		async function sendMessage() {
+		const userInput = messageInput.value.trim();
+		if (!userInput) return;
+
+		// Clear input
+		messageInput.value = '';
+
+		// Display user message in chat
+		const userDiv = document.createElement('div');
+		userDiv.classList.add('chat-message', 'user-message');
+		userDiv.innerHTML = '<strong>User:</strong> ' + userInput;
+		chatContent.appendChild(userDiv);
+
+		// Scroll to bottom
+		chatContent.scrollTop = chatContent.scrollHeight;
+
+		// Send request to /chat
+		try {
+			const resp = await fetch('/chat', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ user_input: userInput })
+			});
+			const data = await resp.json();
+
+			// Display bot response
+			const botDiv = document.createElement('div');
+			botDiv.classList.add('chat-message', 'bot-message');
+			botDiv.innerHTML = '<strong>InfoBot:</strong> ' + data.ai_response;
+			chatContent.appendChild(botDiv);
+			chatContent.scrollTop = chatContent.scrollHeight;
+
+		} catch (err) {
+			console.error(err);
+			// Display error
+			const errorDiv = document.createElement('div');
+			errorDiv.classList.add('chat-message', 'bot-message');
+			errorDiv.innerHTML = '<strong>InfoBot:</strong> Sorry, an error occurred.';
+			chatContent.appendChild(errorDiv);
+			chatContent.scrollTop = chatContent.scrollHeight;
+		}
+		}
+	</script>
+
+	</body>
+	</html>
