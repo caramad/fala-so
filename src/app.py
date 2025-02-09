@@ -107,7 +107,8 @@ def chat_with_phi2(user_input):
 	return prediction.strip()
 
 # ---- ROUTES ---- #
-
+# Flask consegue chamar HTML pages, entao i need to create a simple HTML page and call it instead of this string
+# Suggestion Fast API com mais qualquer coisa
 @app.route("/")
 def index():
 	"""
